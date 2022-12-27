@@ -1,16 +1,10 @@
 # flutter_custom_paint
 
-A new Flutter project.
+<img src="./screenshot/demo.png" width=250>
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Reference
+inspired by
+- [thealiflab/ImageShapeApp](https://github.com/thealiflab/ImageShapeApp/blob/master/lib/rectangle_painter.dart)
+- [arconsis/measurements](https://github.com/arconsis/measurements/issues)

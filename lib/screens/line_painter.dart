@@ -64,36 +64,17 @@ class LinePainter extends CustomPainter {
     canvas.translate(_position.dx, _position.dy);
     canvas.rotate(_radians);
     TextSpan span = TextSpan(
-        style: const TextStyle(color: Color(0xFF4E3629), fontSize: 25),
-        text: distance.toStringAsFixed(1).toString());
+        style: const TextStyle(color: Colors.red, fontSize: 25),
+        text: "${distance.toStringAsFixed(1)} cm");
     TextPainter tp = TextPainter(
         text: span,
         textAlign: TextAlign.left,
         textDirection: TextDirection.ltr);
     tp.layout();
-    tp.paint(canvas, Offset(-30.0, 10.0));
+    tp.paint(canvas, Offset(-50.0, 10.0));
   }
 
   @override
   bool shouldRepaint(LinePainter oldPainter) =>
       oldPainter.points != points || clear;
-}
-
-extension OffsetExtension on Offset {
-  Offset normal() {
-    var normalized = normalize();
-    return Offset(-normalized.dy, normalized.dx);
-  }
-
-  Offset normalize() {
-    return this / distance;
-  }
-
-  double cosAlpha(Offset other) {
-    var thisNormalized = normalize();
-    var otherNormalized = other.normalize();
-
-    return thisNormalized.dx * otherNormalized.dx +
-        thisNormalized.dy * otherNormalized.dy;
-  }
 }
