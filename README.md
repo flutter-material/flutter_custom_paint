@@ -15,3 +15,19 @@ inspired by
 - [Getting the third point from two points on one line](https://math.stackexchange.com/questions/22689/getting-the-third-point-from-two-points-on-one-line)
 
 - [ruler](https://juejin.cn/post/7022914592779010055)
+
+
+
+Canvas canvasRuler = Canvas(bitmap);
+Path rulerFrame = Path();
+double YC = (((points[0].dy + points[1].dy) - lAB) / 2.0);
+double XC = (((points[0].dx + points[1].dx) - 30) / 2.0);
+rulerFrame.moveTo(XC, YC);
+rulerFrame.lineTo(XC + 30, YC);
+rulerFrame.lineTo(XC + 30, YC + lAB);
+rulerFrame.lineTo(XC, YC + lAB);
+rulerFrame.close();
+canvas.translate((points[0].dx + points[1].dx) / 2.0,
+(points[0].dy + points[1].dy) / 2.0);
+canvas.rotate(-(degree + 180));
+canvas.drawPath(rulerFrame, mPaintRulerBackground);
