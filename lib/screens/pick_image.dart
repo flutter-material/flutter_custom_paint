@@ -15,7 +15,7 @@ class PickImage extends StatefulWidget {
 class _PickImageState extends State<PickImage> {
   final ImagePicker _picker = ImagePicker();
 
-  /// 初始化自動觸發相機
+  /// 開啟相機拍攝
   Future<void> _onImageButtonPressed(ImageSource source,
       {BuildContext? context, bool isMultiImage = false}) async {
     try {
@@ -59,7 +59,7 @@ class _PickImageState extends State<PickImage> {
           // 尚未取得影像故返回主頁
           Navigator.pushAndRemoveUntil(
               context!,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => const HomePage()),
               (route) => false);
         }
       });
