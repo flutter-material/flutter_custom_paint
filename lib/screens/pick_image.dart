@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'show_image.dart';
+import 'measure_object.dart';
 import 'home_page.dart';
 
 class PickImage extends StatefulWidget {
@@ -44,11 +44,11 @@ class _PickImageState extends State<PickImage> {
           descriptor.dispose();
           buffer.dispose();
 
-          // 畫面跳轉=>顯示影像
+          // 畫面跳轉=>MeasureObject()
           Navigator.pushAndRemoveUntil(
               context!,
               MaterialPageRoute(
-                builder: (context) => show_image(
+                builder: (context) => MeasureObject(
                   bytesImage: bytes,
                   imageWidth: imageWidth,
                   imageHeight: imageHeight,

@@ -2,18 +2,25 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'line_painter.dart';
+import 'pick_image.dart';
+import 'home_page.dart';
 
 class show_image extends StatefulWidget {
-  show_image({required this.bytesImage});
+  show_image(
+      {required this.bytesImage,
+      required this.imageWidth,
+      required this.imageHeight});
   final Uint8List bytesImage;
-
+  final int imageWidth;
+  final int imageHeight;
   @override
   State<show_image> createState() => _show_imageState();
 }
 
 class _show_imageState extends State<show_image> {
-  ui.Image? _image;
+  ui.Image? _image, _ruler_image;
   List<ui.Offset> _points = [ui.Offset(90, 120), ui.Offset(320, 120)];
   bool _clear = false;
   int _currentlyDraggedIndex = -1;
@@ -29,23 +36,55 @@ class _show_imageState extends State<show_image> {
   }
 
   Future<void> _asyncInit() async {
+    // 讀取拍攝影像
     ui.Codec codec = await ui.instantiateImageCodec(widget.bytesImage,
-        targetWidth: 720, targetHeight: 1080);
+        targetWidth: widget.imageWidth, targetHeight: widget.imageHeight);
     ui.FrameInfo frame = await codec.getNextFrame();
+    // 讀取尺
+    ui.Image rulerImg = await loadImage("images/ruler.png", 272, 40);
+
     setState(() {
+      // 取得拍攝影像
       _image = frame.image;
+      _ruler_image = rulerImg;
+      // 調整初始兩點座標
+      double x1 = widget.imageWidth / 6;
+      double x2 = widget.imageWidth / 6 + widget.imageWidth / 3;
+      double y1 = widget.imageHeight / 6;
+      double y2 = widget.imageHeight / 6;
+      _points = [ui.Offset(x1, y1), ui.Offset(x2, y2)];
+      // 初始化兩點距離
+      point_distance = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
     });
+  }
+
+  /** 讀取尺 */
+  Future<ui.Image> loadImage(
+    String path,
+    int width,
+    int height,
+  ) async {
+    // 取得Uint8List取得圖片
+    var list = (await rootBundle.load(path)).buffer.asUint8List();
+    // 透過Uint8List取得圖片
+    ui.Codec codec = await ui.instantiateImageCodec(list,
+        targetWidth: width, targetHeight: height);
+    ui.FrameInfo frame = await codec.getNextFrame();
+    return frame.image;
   }
 
   @override
   Widget build(BuildContext context) {
+    double _devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+
     return Scaffold(
+      extendBody: true,
       backgroundColor: Colors.grey.shade900,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _image != null
-                ? Column(
+      body: Column(
+        children: [
+          _image != null
+              ? Expanded(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center, // vertically,
                     crossAxisAlignment:
                         CrossAxisAlignment.center, // horizontally,
@@ -81,14 +120,14 @@ class _show_imageState extends State<show_image> {
                                     // check point
                                     double x1 = details.localPosition.dx,
                                         y1 = details.localPosition.dy;
-                                    if (x1 > 720) {
-                                      x1 = 710;
+                                    if (x1 > widget.imageWidth) {
+                                      x1 = widget.imageWidth - 10;
                                     }
                                     if (x1 < 0) {
                                       x1 = 10;
                                     }
-                                    if (y1 > 1080) {
-                                      y1 = 1070;
+                                    if (y1 > widget.imageHeight) {
+                                      y1 = widget.imageHeight - 10;
                                     }
                                     if (y1 < 0) {
                                       y1 = 10;
@@ -120,23 +159,67 @@ class _show_imageState extends State<show_image> {
                                       points: _points,
                                       distance: point_distance,
                                       clear: _clear,
-                                      image: _image!),
+                                      image: _image!,
+                                      rulerImg: _ruler_image!,
+                                      devicePixelRatio: _devicePixelRatio),
                                 ),
                               )),
                         )
-                      ]
+                      ],
                     ],
-                  )
-                : Container(
-                    // child: Expanded(
-                    //   child: Image.memory(
-                    //     widget.bytesImage,
-                    //     fit: BoxFit.cover,
-                    //     height: double.infinity,
-                    //     width: double.infinity,
-                    //   ),
-                    // ),
+                  ),
+                )
+              : Container(
+                  child: Expanded(
+                    child: Image.memory(
+                      widget.bytesImage,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
                     ),
+                  ),
+                ),
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0,
+        color: Colors.black12,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => PickImage()),
+                    (route) => false);
+              },
+              icon: const Icon(
+                Icons.reply_all,
+                color: Colors.white,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                // print('button tapped');
+              },
+              icon: const Icon(
+                Icons.check,
+                color: Colors.white,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                    (route) => false);
+              },
+              icon: const Icon(
+                Icons.close,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
       ),
