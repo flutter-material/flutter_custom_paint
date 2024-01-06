@@ -7,20 +7,21 @@ import 'line_painter.dart';
 import 'pick_image.dart';
 import 'home_page.dart';
 
-class show_image extends StatefulWidget {
-  show_image(
-      {required this.bytesImage,
+class MeasureObject extends StatefulWidget {
+  const MeasureObject(
+      {super.key,
+      required this.bytesImage,
       required this.imageWidth,
       required this.imageHeight});
   final Uint8List bytesImage;
   final int imageWidth;
   final int imageHeight;
   @override
-  State<show_image> createState() => _show_imageState();
+  State<MeasureObject> createState() => _MeasureObjectState();
 }
 
-class _show_imageState extends State<show_image> {
-  ui.Image? _image, _ruler_image;
+class _MeasureObjectState extends State<MeasureObject> {
+  ui.Image? _image;
   List<ui.Offset> _points = [ui.Offset(90, 120), ui.Offset(320, 120)];
   bool _clear = false;
   int _currentlyDraggedIndex = -1;
@@ -40,13 +41,10 @@ class _show_imageState extends State<show_image> {
     ui.Codec codec = await ui.instantiateImageCodec(widget.bytesImage,
         targetWidth: widget.imageWidth, targetHeight: widget.imageHeight);
     ui.FrameInfo frame = await codec.getNextFrame();
-    // 讀取尺
-    ui.Image rulerImg = await loadImage("images/ruler.png", 272, 40);
 
     setState(() {
       // 取得拍攝影像
       _image = frame.image;
-      _ruler_image = rulerImg;
       // 調整初始兩點座標
       double x1 = widget.imageWidth / 6;
       double x2 = widget.imageWidth / 6 + widget.imageWidth / 3;
@@ -58,25 +56,8 @@ class _show_imageState extends State<show_image> {
     });
   }
 
-  /** 讀取尺 */
-  Future<ui.Image> loadImage(
-    String path,
-    int width,
-    int height,
-  ) async {
-    // 取得Uint8List取得圖片
-    var list = (await rootBundle.load(path)).buffer.asUint8List();
-    // 透過Uint8List取得圖片
-    ui.Codec codec = await ui.instantiateImageCodec(list,
-        targetWidth: width, targetHeight: height);
-    ui.FrameInfo frame = await codec.getNextFrame();
-    return frame.image;
-  }
-
   @override
   Widget build(BuildContext context) {
-    double _devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.grey.shade900,
@@ -159,9 +140,7 @@ class _show_imageState extends State<show_image> {
                                       points: _points,
                                       distance: point_distance,
                                       clear: _clear,
-                                      image: _image!,
-                                      rulerImg: _ruler_image!,
-                                      devicePixelRatio: _devicePixelRatio),
+                                      image: _image!),
                                 ),
                               )),
                         )
